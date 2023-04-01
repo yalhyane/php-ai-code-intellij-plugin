@@ -3,9 +3,9 @@
 This plugin generates code and documentation using ChatGPT API based on the code description given by the user.
 
 ## Features
-✅ The plugin generates code based on the user-provided code description.
-✅ Generates a doc comment for the current function.
-✅ Generates a summarized comment for the selected block of code.
+✅ Generate code based on the user-provided code description.   
+✅ Generate a doc comment for the current function.  
+✅ Generate a summarized comment for the selected block of code.  
 
 ## Getting Started
 
