@@ -104,7 +104,11 @@ public class GenerateCodeAction extends AnAction {
         String finalCodeDescription = codeDescription;
         WriteCommandAction.runWriteCommandAction(project, () -> {
             String code = this.getCode(finalCodeDescription);
-             document.insertString(insertAfter, code + "\n");
+            int position = insertAfter;
+            if (position > document.getTextLength()) {
+                position = document.getTextLength();
+            }
+            document.insertString(position, code + "\n");
 
         });
 

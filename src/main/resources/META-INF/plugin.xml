@@ -38,20 +38,20 @@
 <ol>
   <li>Write a comment with a description of the code you want to generate.</li>
   <li>Place the cursor inside the comment.</li>
-  <li>Execute the "Generate AI Code" plugin action by going to <code>Code</code> -> <code>Generate</code> or Press <code>Ctrl + N</code> (or <code>Cmd + N</code> on a Mac) and select <code>Generate AI Code</code> from the menu.</li>
+  <li>Execute the "Generate AI Code" plugin action by going to <strong>Code &gt; Generate</strong> or Press <strong>Ctrl + N</strong> (or <strong>Cmd + N</strong> on a Mac) and select <strong>Generate AI Code</strong> from the menu.</li>
   <li>The generated code will be inserted into your code editor after the comment.</li>
 </ol>
 
-<p>Alternatively, you can select a code description and execute the <code>Generate AI Code</code> plugin action. The generated code will replace the selected text.</p>
+<p>Alternatively, you can select a code description and execute the <strong>Generate AI Code</strong> plugin action. The generated code will replace the selected text.</p>
 
-<p>If you execute the <code>Generate AI Code</code> plugin action without any code description, a dialog will be displayed asking you to enter one.</p>
+<p>If you execute the <strong>Generate AI Code</strong> plugin action without any code description, a dialog will be displayed asking you to enter one.</p>
 
 <h3>Generating Doc Comment for functions</h3>
 <p>To generate a doc comment for the current function, follow these steps:</p>
 
 <ol>
   <li>Place the cursor inside the function definition.</li>
-  <li>Go to <code>Code</code> -> <code>Generate</code> or Press <code>Ctrl + N</code> (or <code>Cmd + N</code> on a Mac) and select <code>Generate AI Comment</code> from the menu.</li>
+  <li>Go to <strong>Code  &gt; Generate</strong> or Press <strong>Ctrl + N</strong> (or <strong>Cmd + N</strong> on a Mac) and select <strong>Generate AI Comment</strong> from the menu.</li>
   <li>The generated doc comment will be inserted above the function definition.</li>
 </ol>
 
@@ -60,7 +60,7 @@
 
 <ol>
   <li>Select the code block you want to generate a summarized comment for.</li>
-  <li>Go to <code>Code</code> -> <code>Generate</code> or Press <code>Ctrl + N</code> (or <code>Cmd + N</code> on a Mac) and select <code>Generate AI Comment</code> from the menu.</li>
+  <li>Go to <strong>Code &gt; Generate</strong> or Press <strong>Ctrl + N</strong> (or <strong>Cmd + N</strong> on a Mac) and select <strong>Generate AI Comment</strong> from the menu.</li>
   <li>The generated summarized comment will be inserted above the selected code block.</li>
 </ol>
 
