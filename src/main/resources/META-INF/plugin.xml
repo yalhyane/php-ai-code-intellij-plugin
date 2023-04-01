@@ -1,0 +1,107 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.yalhyane.intellij.phpaicode.php-ai-code</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>PHP-ai-code</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="y.alhyane@gmail.com" url="https://github.com/yalhyane">YAlhyane</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>
+        <![CDATA[
+    <p>Generate code and documentation using ChatGPT API</p>
+            <h2>Configuration</h2>
+            <ol>
+            <li>
+            Once the plugin is installed, restart the IDE.
+            </li>
+            <li>
+                Retrieve your ChatGPT API key from <a href="https://platform.openai.com/account/api-keys">OpenAI</a>
+                <br/>
+                <strong><i>&nbsp;&nbsp;Note: If you haven't already, you'll have to create an account.</i></strong>
+            </li>
+            <li>
+                Set the API Key in <strong>Settings &gt; Tools &gt; PHP AI Code</strong>
+            </li>
+            </ol>
+            <h2>To use the plugin:</h2>
+
+<h3>Generating Code</h3>
+<p>To generate code using the plugin, follow these steps:</p>
+
+<ol>
+  <li>Write a comment with a description of the code you want to generate.</li>
+  <li>Place the cursor inside the comment.</li>
+  <li>Execute the "Generate AI Code" plugin action by going to <code>Code</code> -> <code>Generate</code> or Press <code>Ctrl + N</code> (or <code>Cmd + N</code> on a Mac) and select <code>Generate AI Code</code> from the menu.</li>
+  <li>The generated code will be inserted into your code editor after the comment.</li>
+</ol>
+
+<p>Alternatively, you can select a code description and execute the <code>Generate AI Code</code> plugin action. The generated code will replace the selected text.</p>
+
+<p>If you execute the <code>Generate AI Code</code> plugin action without any code description, a dialog will be displayed asking you to enter one.</p>
+
+<h3>Generating Doc Comment for functions</h3>
+<p>To generate a doc comment for the current function, follow these steps:</p>
+
+<ol>
+  <li>Place the cursor inside the function definition.</li>
+  <li>Go to <code>Code</code> -> <code>Generate</code> or Press <code>Ctrl + N</code> (or <code>Cmd + N</code> on a Mac) and select <code>Generate AI Comment</code> from the menu.</li>
+  <li>The generated doc comment will be inserted above the function definition.</li>
+</ol>
+
+<h3>Generating Summarized Comment for code blocks</h3>
+<p>To generate a summarized comment for the selected block of code, follow these steps:</p>
+
+<ol>
+  <li>Select the code block you want to generate a summarized comment for.</li>
+  <li>Go to <code>Code</code> -> <code>Generate</code> or Press <code>Ctrl + N</code> (or <code>Cmd + N</code> on a Mac) and select <code>Generate AI Comment</code> from the menu.</li>
+  <li>The generated summarized comment will be inserted above the selected code block.</li>
+</ol>
+
+     ]]>
+    </description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.jetbrains.php</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.phpstorm</depends>
+    <depends>com.intellij.modules.php-capable</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.yalhyane.intellij.phpaicode.settings.AppSettingsState"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.yalhyane.intellij.phpaicode.settings.AppSettingsConfigurable"
+                id="com.yalhyane.intellij.phpaicode.settings.AppSettingsConfigurable"
+                displayName="PHP AI Code"/>
+    </extensions>
+
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="PHP.GenerateDocComment" class="com.yalhyane.intellij.phpaicode.AddAiCommentAction"
+                text="Generate AI Comment"
+                description="Generate code comment using ChatGPT">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
+        </action>
+
+        <!-- Add your actions here -->
+        <action id="PHP.GenerateCode" class="com.yalhyane.intellij.phpaicode.GenerateCodeAction"
+                text="Generate AI Code"
+                description="Generate code using chatGPT">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt G"/>
+        </action>
+    </actions>
+
+</idea-plugin>
