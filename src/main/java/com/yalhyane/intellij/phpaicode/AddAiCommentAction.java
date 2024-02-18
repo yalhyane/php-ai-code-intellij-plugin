@@ -1,11 +1,10 @@
 package com.yalhyane.intellij.phpaicode;
 
-import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiComment;
@@ -16,32 +15,37 @@ import com.jetbrains.php.lang.documentation.phpdoc.psi.PhpDocComment;
 import com.jetbrains.php.lang.psi.PhpPsiElementFactory;
 import com.jetbrains.php.lang.psi.elements.Parameter;
 import com.jetbrains.php.lang.psi.elements.impl.FunctionImpl;
-import com.yalhyane.intellij.phpaicode.settings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class AddAiCommentAction extends AnAction {
+public class AddAiCommentAction extends AiAction {
 
-    private AppSettingsState settings;
-    private OkHttpChatGptApi chatGptAPI;
 
-    public AddAiCommentAction() {
-        super();
-        this.settings = AppSettingsState.getInstance();
+    // constants
+    public static final String ACTION_ID = "PHP.GenerateDocComment";
+
+    public static AiAction getInstance() {
+        return (AddAiCommentAction) ActionManager.getInstance().getAction(ACTION_ID);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
 
-        Project project = event.getRequiredData(CommonDataKeys.PROJECT);
-        Editor editor = event.getData(CommonDataKeys.EDITOR);
-        CaretModel caret = editor.getCaretModel();
-        Document doc = editor.getDocument();
-        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
-        if (editor == null || psiFile == null) {
+
+        if (this.hasInvalidSettings()) {
             return;
         }
+
+        Project project = event.getRequiredData(CommonDataKeys.PROJECT);
+        Editor editor = event.getData(CommonDataKeys.EDITOR);
+        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
+        if (editor == null || psiFile == null) {
+            NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, COULD_NOT_DETECT_EDITOR_OR_FILE_NOTIFICATION_CONTENT);
+            return;
+        }
+
+        CaretModel caret = editor.getCaretModel();
 
         PsiElement element = null;
         String blockCode = "";
@@ -62,12 +66,14 @@ public class AddAiCommentAction extends AnAction {
             // handle function or method
             PsiElement element1 = psiFile.findElementAt(caret.getOffset());
             if (element1 == null) {
+                NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, INVALID_BLOCK_NOTIFICATION_CONTENT);
                 return;
             }
 
             FunctionImpl pe = PsiTreeUtil.getParentOfType(element1, FunctionImpl.class);
 
             if (pe == null) {
+                NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, INVALID_BLOCK_NOTIFICATION_CONTENT);
                 return;
             }
             if (pe.getReturnType() != null) {
@@ -87,6 +93,7 @@ public class AddAiCommentAction extends AnAction {
 
 
         if (element == null) {
+            NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, INVALID_BLOCK_NOTIFICATION_CONTENT);
             return;
         }
 
@@ -129,10 +136,8 @@ public class AddAiCommentAction extends AnAction {
     }
 
     private String getComment(String funcName, String funcBody, String blockType) {
-        chatGptAPI = new OkHttpChatGptApi(settings.chatgptToken);
-        String prompt = getPrompt(funcBody, blockType);
         try {
-            String comment = chatGptAPI.completion(prompt);
+            String comment = promptService.executePrompt(getPrompt(funcBody, blockType));
 
             comment = comment.trim();
             if (comment.startsWith("\"")) {
@@ -143,6 +148,7 @@ public class AddAiCommentAction extends AnAction {
             }
             return " " + funcName + " " + comment;
         } catch (Exception e) {
+            NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, e.getMessage());
             return "";
         }
     }
@@ -156,18 +162,4 @@ public class AddAiCommentAction extends AnAction {
                 .concat(blockCode);
     }
 
-    @Override
-    public boolean isDumbAware() {
-        return super.isDumbAware();
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-        super.update(e);
-
-        // Set the availability based on whether a project is open
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
-         e.getPresentation().setEnabled(editor != null && psiFile != null && this.settings.chatgptToken != null);
-    }
 }

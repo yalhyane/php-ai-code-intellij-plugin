@@ -3,6 +3,8 @@ package com.yalhyane.intellij.phpaicode.settings;
 
 
 import com.intellij.openapi.options.Configurable;
+import com.yalhyane.intellij.phpaicode.AddAiCommentAction;
+import com.yalhyane.intellij.phpaicode.GenerateCodeAction;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,19 +41,24 @@ public class AppSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         AppSettingsState settings = AppSettingsState.getInstance();
-        return !settingsComponent.getUserToken().equals(settings.chatgptToken);
+        return !settingsComponent.getOpenAiToken().equals(settings.openAiToken) ||
+                !settingsComponent.getOpenAiModel().equals(settings.openAiModel);
     }
 
     @Override
     public void apply() {
         AppSettingsState settings = AppSettingsState.getInstance();
-        settings.chatgptToken = settingsComponent.getUserToken();
+        settings.openAiToken = settingsComponent.getOpenAiToken();
+        settings.openAiModel = settingsComponent.getOpenAiModel();
+        AddAiCommentAction.getInstance().reloadSettings();
+        GenerateCodeAction.getInstance().reloadSettings();
     }
 
     @Override
     public void reset() {
         AppSettingsState settings = AppSettingsState.getInstance();
-        settingsComponent.setUserUserToken(settings.chatgptToken);
+        settingsComponent.setOpenAiToken(settings.openAiToken);
+        settingsComponent.setOpenaiModel(settings.openAiModel);
     }
 
     @Override

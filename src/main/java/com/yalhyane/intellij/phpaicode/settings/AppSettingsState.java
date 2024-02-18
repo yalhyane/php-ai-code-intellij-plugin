@@ -20,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
 )
 public class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
 
-    public String chatgptToken = "";
+    public String openAiToken = "";
+    public String openAiModel = AppSettingsComponent.DEFAULT_OPENAI_MODEL;
 
     public static AppSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(AppSettingsState.class);
@@ -37,3 +38,4 @@ public class AppSettingsState implements PersistentStateComponent<AppSettingsSta
         XmlSerializerUtil.copyBean(state, this);
     }
 }
+

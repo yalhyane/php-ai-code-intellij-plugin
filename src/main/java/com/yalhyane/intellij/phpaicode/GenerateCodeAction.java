@@ -1,6 +1,6 @@
 package com.yalhyane.intellij.phpaicode;
 
-import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -17,33 +17,41 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.documentation.phpdoc.lexer.PhpDocTokenTypes;
 import com.jetbrains.php.lang.documentation.phpdoc.psi.PhpDocComment;
 import com.jetbrains.php.lang.documentation.phpdoc.psi.PhpDocTokenImpl;
-import com.yalhyane.intellij.phpaicode.settings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class GenerateCodeAction extends AnAction {
+public class GenerateCodeAction extends AiAction {
 
-    private AppSettingsState settings;
-    private OkHttpChatGptApi chatGptAPI;
+    // constants
+    public static final String ACTION_ID = "PHP.GenerateCode";
 
-    public GenerateCodeAction() {
-        super();
-        this.settings = AppSettingsState.getInstance();
+
+
+    public static GenerateCodeAction getInstance() {
+        return (GenerateCodeAction) ActionManager.getInstance().getAction(ACTION_ID);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
 
+
+        if (this.hasInvalidSettings()) {
+            return;
+        }
+
         Project project = event.getRequiredData(CommonDataKeys.PROJECT);
         Editor editor = event.getData(CommonDataKeys.EDITOR);
         if (editor == null) {
+            NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, COULD_NOT_DETECT_EDITOR_OR_FILE_NOTIFICATION_CONTENT);
             return;
         }
+
         Document document = editor.getDocument();
         Caret primaryCaret = editor.getCaretModel().getPrimaryCaret();
         PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
         if (psiFile == null) {
+            NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, COULD_NOT_DETECT_EDITOR_OR_FILE_NOTIFICATION_CONTENT);
             return;
         }
 
@@ -118,10 +126,10 @@ public class GenerateCodeAction extends AnAction {
     }
 
     private String getCode(String codeDescription) {
-        chatGptAPI = new OkHttpChatGptApi(settings.chatgptToken);
-        String prompt = getPrompt(codeDescription);
+
         try {
-            String code = chatGptAPI.completion(prompt);
+            String prompt = getPrompt(codeDescription);
+            String code = promptService.executePrompt(prompt);
 
             code = code.trim();
             if (code.startsWith("\"")) {
@@ -132,6 +140,7 @@ public class GenerateCodeAction extends AnAction {
             }
             return code;
         } catch (Exception e) {
+            NotificationUtils.showErrorNotification(GENERAL_ERROR_NOTIFICATION_TITLE, e.getMessage());
             return "";
         }
     }
@@ -146,18 +155,4 @@ public class GenerateCodeAction extends AnAction {
                 .concat("\"");
     }
 
-    @Override
-    public boolean isDumbAware() {
-        return super.isDumbAware();
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-        super.update(e);
-
-        // Set the availability based on whether a project is open
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
-        e.getPresentation().setEnabled(editor != null && psiFile != null && this.settings.chatgptToken != null);
-    }
 }

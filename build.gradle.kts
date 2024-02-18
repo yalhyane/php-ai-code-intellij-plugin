@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.yalhyane.intellij.phpaicode"
-version = "1.0.1"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -13,12 +13,13 @@ repositories {
 dependencies {
     implementation("org.json:json:20220924")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.theokanning.openai-gpt3-java:service:0.18.2")
 }
 
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.2")
+    version.set("2023.2.3")
     type.set("PS")
 
     plugins.set(listOf("com.jetbrains.php"))
@@ -36,8 +37,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("221")
-        untilBuild.set("231.*")
+        sinceBuild.set("232")
+        untilBuild.set("241.*")
     }
 
     signPlugin {
